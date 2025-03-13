@@ -1,0 +1,26 @@
+{
+  "name": "knockai_be",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/GraphTech-JS/KnockAI_BE#readme",
+  "bugs": {
+    "url": "https://github.com/GraphTech-JS/KnockAI_BE/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GraphTech-JS/KnockAI_BE.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.14.0",
+    "sequelize": "^6.37.6"
+  }
+}
