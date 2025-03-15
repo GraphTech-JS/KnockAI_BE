@@ -23,3 +23,7 @@ export function verifyToken(token) {
 export function hash(string) {
   return createHash("sha256").update(string).digest("hex");
 }
+
+export function generateVerificationCode() {
+  return Math.floor(1000 + Math.random() * 9000);
+}
