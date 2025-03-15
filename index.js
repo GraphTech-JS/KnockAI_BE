@@ -3,6 +3,7 @@ import authRouter from "./routers/auth.js";
 import swaggerUi from "swagger-ui-express";
 import apiSpec from "./openapi.js";
 import cors from "cors";
+import { errorHanlder } from "./middlewares/error_handler.js";
 
 const PORT = process.env.PORT || 3000;
 function loging(req, res, next) {
@@ -22,6 +23,8 @@ app.get("/health", (req, res) => {
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(apiSpec));
 
 app.use("/api/auth", loging, authRouter);
+
+app.use(errorHanlder);
 
 app.listen(PORT, () => {
   console.log("Server is running on port 3000");

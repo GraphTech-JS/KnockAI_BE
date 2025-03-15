@@ -1,11 +1,12 @@
 import { verifyToken } from "../helpers/auth.js";
+import { UnauthorizedError } from "./error_handler.js";
 
 export function authMiddleware(req, res, next) {
   try {
     const authheader = req.headers.authorization;
 
     if (!authheader) {
-      throw new Error();
+      throw new UnauthorizedError();
     }
 
     const [_, token] = authheader.split(" ");
@@ -16,12 +17,12 @@ export function authMiddleware(req, res, next) {
 
     const decoded = verifyToken(token);
     if (!decoded) {
-      throw new Error();
+      throw new UnauthorizedError();
     }
     req.user = decoded;
 
     next();
   } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
+    next(error);
   }
 }
