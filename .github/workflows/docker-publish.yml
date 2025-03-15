@@ -37,3 +37,6 @@ jobs:
         run: |
           REPO_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           docker push ghcr.io/$REPO_OWNER/knockai-be:latest
+
+      - name: Trigger render deployment
+        run: curl https://api.render.com/deploy/${{secrets.RENDER_DEPLOY_TOKEN}}?key=${{secrets.RENDER_DEPLOY_KEY}}
