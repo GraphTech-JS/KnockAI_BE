@@ -14,6 +14,7 @@ export default {
       primaryKey: true,
     },
     password: { type: DataTypes.STRING, allowNull: false },
+    verification_code: { type: DataTypes.STRING, allowNull: true },
   },
   tableName: "User",
 };

@@ -1,6 +1,6 @@
 import { hash } from "../helpers/auth.js";
 
-export function toUserRecordInput(body) {
+export function toUserRecordInput(body, verificationCode) {
   return {
     first_name: body.firstName,
     last_name: body.lastName,
@@ -9,6 +9,7 @@ export function toUserRecordInput(body) {
     political_affiliation: body.politicalAffiliation,
     role: body.role,
     status: "UNVERIFIED",
+    verification_code: verificationCode,
   };
 }
 
