@@ -1,7 +1,6 @@
 import express from "express";
 import {
   generateToken,
-  verifyToken,
   generateVerificationCode,
   hash,
 } from "../helpers/auth.js";
@@ -105,7 +104,7 @@ router.post("/confirmRegistration", authMiddleware, async (req, res) => {
 3. update user code into users table by userId 
 4. send code via email
 */
-router.get("/resendCode", authMiddleware, (req, res) => {
+router.get("/resendCode", authMiddleware, async (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
