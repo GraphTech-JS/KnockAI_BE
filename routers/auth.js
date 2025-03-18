@@ -164,4 +164,28 @@ router.post("/refreshToken", async (req, res) => {
  * 
  */
 
+router.post("/refreshToken", async (req, res) => {
+  const receivedToken = req.body.refreshToken;
+  if (!receivedToken) {
+    return res.status(401).json({ error: "Refresh token is required." });
+  }
+  try {
+    const decoded = verifyToken(receivedToken);
+    const userRecord = await User.findOne({
+      where: { user_id: decoded.userId },
+    });
+
+    if (!userRecord) {
+      return res.status(401).json({ message });
+    }
+
+    const userResponse = toUserResponse(userRecord);
+
+    const newAccessTokens = generateTokensPair(userResponse);
+
+    res.status(200).json(newAccessTokens);
+  } catch (error) {
+    return res.status(401).json({ message });
+  }
+});
 export default router;
