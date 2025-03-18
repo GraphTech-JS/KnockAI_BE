@@ -109,10 +109,7 @@ router.get("/resendCode", authMiddleware, async (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-router.post("/forgotPassword", (req, res) => {
-  res.status(200).json({ status: "ok" });
-});
-
+//write docs for refreshToken -> see an example openapi.js
 router.post("/refreshToken", async (req, res) => {
   const receivedToken = req.body.refreshToken;
   if (!receivedToken) {
@@ -137,4 +134,34 @@ router.post("/refreshToken", async (req, res) => {
     return res.status(401).json({ message });
   }
 });
+
+/**
+ * follow the next structure (pattern) for routers (please review current routers and change it)
+ * Let's handle errors in one place middleware/error_handler.js (errorHandler) 
+ * 
+ * router.post("/example", async (req, res, next) => {
+  try {
+
+    //your code here
+
+    if(<condition>){
+  
+    // res.status(401).json({ ... }); << DO NOT USE IT HERE
+
+      throw new Error(...) << HERE IS BETTER
+    }
+
+    //your code here
+    
+    return res.status(200).json(...);
+  } catch (error) {
+
+    // res.status(401).json({ message }); << DO NOT USE IT HERE
+
+    return next(error) << HERE IS BETTER << after this, it handles into middleware/error_handler.js (errorHandler)  
+  }
+});
+ * 
+ */
+
 export default router;

@@ -25,7 +25,7 @@ export class UnauthorizedError extends ServerError {
   }
 }
 
-export const errorHanlder = (error, req, res, next) => {
+export const errorHandler = (error, req, res, next) => {
   if (error.handled === false) {
     error = new UnhandledError();
   }
