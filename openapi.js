@@ -6,10 +6,89 @@ const emailType = type("string", {
   description: "Valid email address format",
 });
 
+const uuidType = type("string", {
+  format: "uuid",
+  pattern:
+    "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+  description: "Valid UUID format (e.g., 550e8400-e29b-41d4-a716-446655440000)",
+});
+
 const enumType = (enumArray) =>
   type("string", {
     enum: enumArray,
   });
+
+const roleEnum = enumType(["ADMIN", "COMPANY", "AGITATOR"]);
+const userStatusEnum = enumType(["VERIFIED", "UNVERIFIED"]);
+const politicalAffiliationEnum = enumType([
+  "DEMOCRAT",
+  "REPUBLICAN",
+  "INDEPENDENT_OR_ENTERPRICE",
+]);
+
+const messageSchema = {
+  schema: {
+    type: "object",
+    properties: {
+      message: type("string"),
+    },
+  },
+  example: {
+    message: "Error message",
+  },
+};
+
+const errorResponsePattern = (code, description, schema) => ({
+  [code]: {
+    description,
+    content: {
+      "application/json": schema,
+    },
+  },
+});
+
+const notFoundResponse = errorResponsePattern(404, "NOT_FOUND", messageSchema);
+
+const unauthorizedResponse = errorResponsePattern(
+  401,
+  "ACCESS_DENY",
+  messageSchema
+);
+
+const unexpectedErrorResponse = errorResponsePattern(
+  500,
+  "UNEXPECTED",
+  messageSchema
+);
+
+const baseErrorResponses = {
+  ...unauthorizedResponse,
+  ...unexpectedErrorResponse,
+};
+
+const userSchema = {
+  schema: {
+    type: "object",
+    properties: {
+      userId: uuidType,
+      firstName: type("string"),
+      lastName: type("string"),
+      email: emailType,
+      role: roleEnum,
+      status: userStatusEnum,
+      politicalAffiliation: politicalAffiliationEnum,
+    },
+  },
+  example: {
+    userId: "550e8400-e29b-41d4-a716-446655440000",
+    firstName: "Jane",
+    lastName: "Doe",
+    email: "jane.doe@example.com",
+    role: "ADMIN",
+    status: "VERIFIED",
+    politicalAffiliation: "INDEPENDENT_OR_ENTERPRICE",
+  },
+};
 
 const tokenPairSchema = {
   schema: {
@@ -48,9 +127,8 @@ const loginPath = {
           "application/json": tokenPairSchema,
         },
       },
-      401: {
-        description: "Unauthorized",
-      },
+      ...baseErrorResponses,
+      ...notFoundResponse,
     },
   },
 };
@@ -68,8 +146,9 @@ const registerPath = {
               firstName: type("string"),
               lastName: type("string"),
               email: emailType,
-              role: enumType(["admin", "user", "guest"]),
-              politicalAffiliation: enumType(["admin", "user", "guest"]),
+              role: roleEnum,
+              status: userStatusEnum,
+              politicalAffiliation: politicalAffiliationEnum,
               password: type("string"),
             },
           },
@@ -83,9 +162,7 @@ const registerPath = {
           "application/json": tokenPairSchema,
         },
       },
-      400: {
-        description: "Bad request",
-      },
+      ...unexpectedErrorResponse,
     },
   },
 };
@@ -124,12 +201,32 @@ const confirmRegistrationPath = {
           "application/json": tokenPairSchema,
         },
       },
-      400: {
-        description: "Invalid request or verification code.",
+      ...baseErrorResponses,
+      ...notFoundResponse,
+    },
+  },
+};
+
+const mePath = {
+  get: {
+    summary: "Get user data by token",
+    description:
+      "Retrieves the authenticated user's data based on the user ID extracted from a valid Bearer token. The endpoint queries the database for a user matching the provided user ID and returns their details in a formatted response.",
+    security: [
+      {
+        bearerAuth: [],
       },
-      401: {
-        description: "Unauthorized. Invalid or missing token.",
+    ],
+    responses: {
+      200: {
+        description:
+          "User data retrieved successfully. Returns the user's details in JSON format.",
+        content: {
+          "application/json": userSchema,
+        },
       },
+      ...baseErrorResponses,
+      ...notFoundResponse,
     },
   },
 };
@@ -163,5 +260,6 @@ export default {
     "/api/auth/register": registerPath,
     "/api/auth/login": loginPath,
     "/api/auth/confirmRegistration": confirmRegistrationPath,
+    "/api/auth/me": mePath,
   },
 };
