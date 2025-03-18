@@ -4,7 +4,9 @@
 - [ ] 4. Write docs for currect endpoints
 - [ ] 5. Handle error in one place (use custom errors, see middlewaress/error_handler.js)
 - [ ] 6. Separate routers logic to services (create services/user.js)
-- [ ] 7. Move helpers, mappers, middlewares, models, routers, services - [ ]> src (should be created)
+- [ ] 7. Move helpers, mappers, middlewares, models, routers, services -> src (should be created)
 - [ ] 8. Use secret (process.env.SECRET) for token generation
 - [ ] 9. Use different algorithms for access token and refresh tokens
 - [ ] 10. Clean up code (remove unused variables/imports)
+- [ ] 11. Create other database instanse (prob. NeonDB)
+- [ ] 12. Start using migration instead of sync()
