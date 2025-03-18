@@ -1,9 +1,7 @@
 import { Sequelize } from "sequelize";
 import userModel from "./users.js";
 
-const connectionString =
-  process.env.DATABASE_URL ||
-  "postgresql://school262csc25_owner:npg_j6dVi8YqWZkv@ep-square-night-a2ann39l-pooler.eu-central-1.aws.neon.tech/school262csc25?sslmode=require";
+const connectionString = process.env.DATABASE_URL;
 
 export const sequelize = new Sequelize(connectionString, {
   dialect: "postgres",

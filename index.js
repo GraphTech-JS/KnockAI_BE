@@ -1,9 +1,10 @@
+import "./helpers/env.js";
 import express from "express";
-import authRouter from "./routers/auth.js";
 import swaggerUi from "swagger-ui-express";
 import apiSpec from "./openapi.js";
 import cors from "cors";
 import { errorHanlder } from "./middlewares/error_handler.js";
+import authRouter from "./routers/auth.js";
 
 const PORT = process.env.PORT || 3000;
 function loging(req, res, next) {
@@ -29,3 +30,5 @@ app.use(errorHanlder);
 app.listen(PORT, () => {
   console.log("Server is running on port 3000");
 });
+
+export default app;

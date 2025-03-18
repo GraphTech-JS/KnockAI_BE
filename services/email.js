@@ -17,7 +17,6 @@ class EmailServise {
         from: this.gmailAddress,
         to,
         subject,
-        // text: "Привіт! Це тестовий лист, надісланий за допомогою Nodemailer.", // Текст листа
         html: content,
       };
 
