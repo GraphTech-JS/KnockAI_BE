@@ -3,10 +3,10 @@ import { createHash } from "crypto";
 
 const secretKey = "your-secret-key";
 
-export function generateToken(payload) {
-  const token = jwt.sign(payload, secretKey, { expiresIn: "1h" });
-  console.log("Generated Token:", token);
-  return token;
+export function generateToken(payload, expiresIn = "1h") {
+  const accessToken = jwt.sign(payload, secretKey, { expiresIn });
+  console.log("Generated Token:", accessToken);
+  return accessToken;
 }
 
 export function verifyToken(token) {
@@ -26,4 +26,10 @@ export function hash(string) {
 
 export function generateVerificationCode() {
   return Math.floor(1000 + Math.random() * 9000);
+}
+
+export function generateTokensPair(payload) {
+  const accessToken = generateToken(payload);
+  const refreshToken = generateToken(payload, "1d");
+  return { accessToken, refreshToken };
 }

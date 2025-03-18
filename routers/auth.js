@@ -3,6 +3,7 @@ import {
   generateToken,
   generateVerificationCode,
   hash,
+  generateTokensPair,
 } from "../helpers/auth.js";
 import { authMiddleware } from "../middlewares/auth.js";
 import { toUserRecordInput, toUserResponse } from "../mappers/users.js";
@@ -29,8 +30,8 @@ router.post("/register", async (req, res) => {
     const userCreateInput = toUserRecordInput(req.body, hashedVerificationCode);
     const newUser = await User.create(userCreateInput);
     const payload = toUserResponse(newUser);
-    const token = generateToken(payload);
-    res.status(201).json({ accessToken: token, refreshToken: "" });
+    const tokens = generateTokensPair(payload);
+    res.status(201).json(tokens);
   } catch (error) {
     res.status(401).json({ error: "wrong credentials" });
   }
@@ -63,8 +64,8 @@ router.post("/login", async (req, res) => {
     }
 
     const payload = toUserResponse(userRecord);
-    const token = generateToken(payload);
-    res.status(200).json({ accessToken: token, refreshToken: "" });
+    const tokens = generateTokensPair(payload);
+    res.status(200).json(tokens);
   } catch (error) {
     res.status(401).json({ error: "wrong credentials" });
   }
@@ -92,8 +93,8 @@ router.post("/confirmRegistration", authMiddleware, async (req, res) => {
   }
 
   const payload = toUserResponse(user);
-  const token = generateToken(payload);
-  res.status(200).json({ accessToken: token, refreshToken: "" });
+  const tokens = generateTokensPair(payload);
+  res.status(200).json(tokens);
 });
 
 /*
@@ -112,4 +113,28 @@ router.post("/forgotPassword", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
+router.post("/refreshToken", async (req, res) => {
+  const receivedToken = req.body.refreshToken;
+  if (!receivedToken) {
+    return res.status(401).json({ error: "Refresh token is required." });
+  }
+  try {
+    const decoded = verifyToken(receivedToken);
+    const userRecord = await User.findOne({
+      where: { user_id: decoded.userId },
+    });
+
+    if (!userRecord) {
+      return res.status(401).json({ message });
+    }
+
+    const userResponse = toUserResponse(userRecord);
+
+    const newAccessTokens = generateTokensPair(userResponse);
+
+    res.status(200).json(newAccessTokens);
+  } catch (error) {
+    return res.status(401).json({ message });
+  }
+});
 export default router;
