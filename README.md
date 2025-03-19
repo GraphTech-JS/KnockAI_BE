@@ -10,3 +10,4 @@
 - [ ] 10. Clean up code (remove unused variables/imports)
 - [ ] 11. Create other database instanse (prob. NeonDB)
 - [ ] 12. Start using migration instead of sync()
+- [ ] 13. Use swagger as validator for inputs

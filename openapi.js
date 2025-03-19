@@ -147,7 +147,6 @@ const registerPath = {
               lastName: type("string"),
               email: emailType,
               role: roleEnum,
-              status: userStatusEnum,
               politicalAffiliation: politicalAffiliationEnum,
               password: type("string"),
             },
