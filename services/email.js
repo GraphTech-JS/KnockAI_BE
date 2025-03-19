@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-class EmailServise {
+class EmailService {
   constructor(gmailAddress, gmailPass) {
     this.transporter = nodemailer.createTransport({
       service: "gmail",
@@ -107,4 +107,4 @@ class EmailServise {
 
 const GMAIL_ADDRESS = process.env.GMAIL_ADDRESS;
 const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD;
-export default new EmailServise(GMAIL_ADDRESS, GMAIL_PASSWORD);
+export default new EmailService(GMAIL_ADDRESS, GMAIL_PASSWORD);

@@ -8,6 +8,7 @@ import {
 import { authMiddleware } from "../middlewares/auth.js";
 import { toUserRecordInput, toUserResponse } from "../mappers/users.js";
 import { User } from "../models/connection.js";
+import EmailService from "../services/email.js";
 
 const router = express.Router();
 
@@ -23,12 +24,21 @@ const router = express.Router();
  */
 router.post("/register", async (req, res) => {
   try {
+    const { firstName, lastName, email } = req.body;
+
     const verificationCode = generateVerificationCode();
     console.log(verificationCode);
     const hashedVerificationCode = hash(verificationCode.toString());
 
     const userCreateInput = toUserRecordInput(req.body, hashedVerificationCode);
     const newUser = await User.create(userCreateInput);
+
+    const emailContent = EmailService.generateConfirmRegistrationHtml(
+      verificationCode,
+      firstName,
+      lastName
+    );
+    await EmailService.sendMessage(email, "Email confirmation", emailContent);
     const payload = toUserResponse(newUser);
     const tokens = generateTokensPair(payload);
     res.status(201).json(tokens);
