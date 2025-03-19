@@ -1,6 +1,6 @@
-- [ ] 1. Finilize registration (send verification code, use emailService)
+- [x] 1. Finilize registration (send verification code, use emailService)
 - [ ] 2. Implement api/auth/resendCode endpoint
-- [ ] 3. Follow routers structure (suggested into routers/auth.js)
+- [x] 3. Follow routers structure (suggested into routers/auth.js)
 - [ ] 4. Write docs for currect endpoints
 - [ ] 5. Handle error in one place (use custom errors, see middlewaress/error_handler.js)
 - [ ] 6. Separate routers logic to services (create services/user.js)
