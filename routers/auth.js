@@ -22,12 +22,11 @@ const router = express.Router();
     password: string
   }
  */
-router.post("/register", async (req, res) => {
+router.post("/register", async (req, res, next) => {
   try {
     const { firstName, lastName, email } = req.body;
 
     const verificationCode = generateVerificationCode();
-    console.log(verificationCode);
     const hashedVerificationCode = hash(verificationCode.toString());
 
     const userCreateInput = toUserRecordInput(req.body, hashedVerificationCode);
@@ -43,17 +42,19 @@ router.post("/register", async (req, res) => {
     const tokens = generateTokensPair(payload);
     res.status(201).json(tokens);
   } catch (error) {
-    res.status(401).json({ error: "wrong credentials" });
+    return next(error);
   }
 });
 
-router.get("/me", authMiddleware, async (req, res) => {
+router.get("/me", authMiddleware, async (req, res, next) => {
   try {
     const userId = req.user.userId;
     const userRecord = await User.findOne({ where: { user_id: userId } });
     const userResponse = toUserResponse(userRecord);
     res.status(200).json(userResponse);
-  } catch (error) {}
+  } catch (error) {
+    return next(error);
+  }
 });
 
 /**
@@ -62,7 +63,7 @@ router.get("/me", authMiddleware, async (req, res) => {
     password: string
   }
  */
-router.post("/login", async (req, res) => {
+router.post("/login", async (req, res, next) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
@@ -77,7 +78,7 @@ router.post("/login", async (req, res) => {
     const tokens = generateTokensPair(payload);
     res.status(200).json(tokens);
   } catch (error) {
-    res.status(401).json({ error: "wrong credentials" });
+    return next(error);
   }
 });
 
@@ -85,26 +86,30 @@ router.post("/login", async (req, res) => {
     code: string
   }
  */
-router.post("/confirmRegistration", authMiddleware, async (req, res) => {
-  const userId = req.user.userId;
-  const userRecord = await User.findOne({ where: { user_id: userId } });
-  const code = req.body.code;
-  const hashedVerificationCode = hash(code.toString());
-  if (hashedVerificationCode !== userRecord.verification_code) {
-    return res.status(400).json({ error: "Invalid verification code." });
-  }
-  const [updatedRowsCount, [user]] = await User.update(
-    { verification_code: null, status: "VERIFIED" },
-    { where: { user_id: userRecord.user_id }, returning: true }
-  );
+router.post("/confirmRegistration", authMiddleware, async (req, res, next) => {
+  try {
+    const userId = req.user.userId;
+    const userRecord = await User.findOne({ where: { user_id: userId } });
+    const code = req.body.code;
+    const hashedVerificationCode = hash(code.toString());
+    if (hashedVerificationCode !== userRecord.verification_code) {
+      throw new Error();
+    }
+    const [updatedRowsCount, [user]] = await User.update(
+      { verification_code: null, status: "VERIFIED" },
+      { where: { user_id: userRecord.user_id }, returning: true }
+    );
 
-  if (updatedRowsCount === 0) {
-    return res.status(404).json({ error: "User not found." });
-  }
+    if (updatedRowsCount === 0) {
+      throw new Error();
+    }
 
-  const payload = toUserResponse(user);
-  const tokens = generateTokensPair(payload);
-  res.status(200).json(tokens);
+    const payload = toUserResponse(user);
+    const tokens = generateTokensPair(payload);
+    res.status(200).json(tokens);
+  } catch (error) {
+    return next(error);
+  }
 });
 
 /*
@@ -115,15 +120,15 @@ router.post("/confirmRegistration", authMiddleware, async (req, res) => {
 3. update user code into users table by userId 
 4. send code via email
 */
-router.get("/resendCode", authMiddleware, async (req, res) => {
+router.get("/resendCode", authMiddleware, async (req, res, next) => {
   res.status(200).json({ status: "ok" });
 });
 
 //write docs for refreshToken -> see an example openapi.js
-router.post("/refreshToken", async (req, res) => {
+router.post("/refreshToken", async (req, res, next) => {
   const receivedToken = req.body.refreshToken;
   if (!receivedToken) {
-    return res.status(401).json({ error: "Refresh token is required." });
+    throw new Error();
   }
   try {
     const decoded = verifyToken(receivedToken);
@@ -132,7 +137,7 @@ router.post("/refreshToken", async (req, res) => {
     });
 
     if (!userRecord) {
-      return res.status(401).json({ message });
+      throw new Error();
     }
 
     const userResponse = toUserResponse(userRecord);
@@ -141,7 +146,7 @@ router.post("/refreshToken", async (req, res) => {
 
     res.status(200).json(newAccessTokens);
   } catch (error) {
-    return res.status(401).json({ message });
+    return next(error);
   }
 });
 
@@ -173,29 +178,4 @@ router.post("/refreshToken", async (req, res) => {
 });
  * 
  */
-
-router.post("/refreshToken", async (req, res) => {
-  const receivedToken = req.body.refreshToken;
-  if (!receivedToken) {
-    return res.status(401).json({ error: "Refresh token is required." });
-  }
-  try {
-    const decoded = verifyToken(receivedToken);
-    const userRecord = await User.findOne({
-      where: { user_id: decoded.userId },
-    });
-
-    if (!userRecord) {
-      return res.status(401).json({ message });
-    }
-
-    const userResponse = toUserResponse(userRecord);
-
-    const newAccessTokens = generateTokensPair(userResponse);
-
-    res.status(200).json(newAccessTokens);
-  } catch (error) {
-    return res.status(401).json({ message });
-  }
-});
 export default router;
