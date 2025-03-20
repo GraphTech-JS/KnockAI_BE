@@ -1,13 +1,14 @@
 - [x] 1. Finilize registration (send verification code, use emailService)
-- [ ] 2. Implement api/auth/resendCode endpoint
-- [x] 3. Follow routers structure (suggested into routers/auth.js)
-- [ ] 4. Write docs for currect endpoints
-- [ ] 5. Handle error in one place (use custom errors, see middlewaress/error_handler.js)
-- [ ] 6. Separate routers logic to services (create services/user.js)
-- [ ] 7. Move helpers, mappers, middlewares, models, routers, services -> src (should be created)
-- [ ] 8. Use secret (process.env.SECRET) for token generation
-- [ ] 9. Use different algorithms for access token and refresh tokens
-- [ ] 10. Clean up code (remove unused variables/imports)
-- [ ] 11. Create other database instanse (prob. NeonDB)
-- [ ] 12. Start using migration instead of sync()
-- [ ] 13. Use swagger as validator for inputs
+- [x] 2. Follow routers structure (suggested into routers/auth.js)
+- [ ] 3. Handle error in one place (use custom errors, see middlewaress/error_handler.js)
+- [ ] 4. Implement api/auth/resendCode endpoint
+- [ ] 5. Use swagger as validator for inputs
+- [ ] 6. Write docs for currect endpoints
+- [ ] 7. Separate routers logic to services (create services/user.js)
+- [ ] 8. Move helpers, mappers, middlewares, models, routers, services -> src (should be created)
+- [ ] 9. Use secret (process.env.SECRET) for token generation
+- [ ] 10. Use different algorithms for access token and refresh tokens
+- [ ] 11. Clean up code (remove unused variables/imports)
+- [ ] 12. Create other database instanse (prob. NeonDB)
+- [ ] 13. Start using migration instead of sync()
+- [ ] 14. Move logging() from index.js to middlewares/logging.js <--create new file
