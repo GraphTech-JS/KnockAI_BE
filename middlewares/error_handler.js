@@ -25,6 +25,12 @@ export class UnauthorizedError extends ServerError {
   }
 }
 
+export class WrongCredentialError extends ServerError {
+  constructor() {
+    super("WRONG_CREDENTIAL", 401);
+  }
+}
+
 export const errorHandler = (error, req, res, next) => {
   if (error.handled === false) {
     error = new UnhandledError();

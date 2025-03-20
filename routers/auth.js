@@ -9,7 +9,10 @@ import { authMiddleware } from "../middlewares/auth.js";
 import { toUserRecordInput, toUserResponse } from "../mappers/users.js";
 import { User } from "../models/connection.js";
 import EmailService from "../services/email.js";
-
+import {
+  NotFoundUserError,
+  WrongCredentialError,
+} from "../middlewares/error_handler.js";
 const router = express.Router();
 
 /**
@@ -50,6 +53,9 @@ router.get("/me", authMiddleware, async (req, res, next) => {
   try {
     const userId = req.user.userId;
     const userRecord = await User.findOne({ where: { user_id: userId } });
+    if (!userRecord) {
+      throw new NotFoundUserError();
+    }
     const userResponse = toUserResponse(userRecord);
     res.status(200).json(userResponse);
   } catch (error) {
@@ -71,7 +77,7 @@ router.post("/login", async (req, res, next) => {
     const hashedPassword = hash(password);
 
     if (hashedPassword !== userRecord.password) {
-      throw new Error();
+      throw new WrongCredentialError();
     }
 
     const payload = toUserResponse(userRecord);
@@ -93,7 +99,7 @@ router.post("/confirmRegistration", authMiddleware, async (req, res, next) => {
     const code = req.body.code;
     const hashedVerificationCode = hash(code.toString());
     if (hashedVerificationCode !== userRecord.verification_code) {
-      throw new Error();
+      throw new WrongCredentialError();
     }
     const [updatedRowsCount, [user]] = await User.update(
       { verification_code: null, status: "VERIFIED" },
@@ -101,7 +107,7 @@ router.post("/confirmRegistration", authMiddleware, async (req, res, next) => {
     );
 
     if (updatedRowsCount === 0) {
-      throw new Error();
+      throw new NotFoundUserError();
     }
 
     const payload = toUserResponse(user);
@@ -121,14 +127,45 @@ router.post("/confirmRegistration", authMiddleware, async (req, res, next) => {
 4. send code via email
 */
 router.get("/resendCode", authMiddleware, async (req, res, next) => {
-  res.status(200).json({ status: "ok" });
+  try {
+    const { firstName, lastName, email } = req.user;
+    const userId = req.user.userId;
+    const userRecord = await User.findOne({ where: { user_id: userId } });
+    if (!userRecord) {
+      throw new NotFoundUserError();
+    }
+
+    const newVerificationCode = generateVerificationCode();
+    const hashedVerificationCode = hash(newVerificationCode.toString());
+
+    const emailContent = EmailService.generateConfirmRegistrationHtml(
+      newVerificationCode,
+      firstName,
+      lastName
+    );
+
+    await EmailService.sendMessage(email, "Email confirmation", emailContent);
+
+    const [updatedRowsCount, [user]] = await User.update(
+      { verification_code: hashedVerificationCode },
+      { where: { user_id: userRecord.user_id }, returning: true }
+    );
+
+    if (updatedRowsCount === 0) {
+      throw new NotFoundUserError();
+    }
+
+    return res.status(200).json({ status: "ok" });
+  } catch (error) {
+    return next(error);
+  }
 });
 
 //write docs for refreshToken -> see an example openapi.js
 router.post("/refreshToken", async (req, res, next) => {
   const receivedToken = req.body.refreshToken;
   if (!receivedToken) {
-    throw new Error();
+    throw new WrongCredentialError();
   }
   try {
     const decoded = verifyToken(receivedToken);
@@ -137,7 +174,7 @@ router.post("/refreshToken", async (req, res, next) => {
     });
 
     if (!userRecord) {
-      throw new Error();
+      throw new NotFoundUserError(decoded.userId);
     }
 
     const userResponse = toUserResponse(userRecord);

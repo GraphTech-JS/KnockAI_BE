@@ -1,7 +1,7 @@
 - [x] 1. Finilize registration (send verification code, use emailService)
 - [x] 2. Follow routers structure (suggested into routers/auth.js)
-- [ ] 3. Handle error in one place (use custom errors, see middlewaress/error_handler.js)
-- [ ] 4. Implement api/auth/resendCode endpoint
+- [x] 3. Handle error in one place (use custom errors, see middlewaress/error_handler.js)
+- [x] 4. Implement api/auth/resendCode endpoint
 - [ ] 5. Use swagger as validator for inputs
 - [ ] 6. Write docs for currect endpoints
 - [ ] 7. Separate routers logic to services (create services/user.js)
