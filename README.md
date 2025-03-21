@@ -15,6 +15,7 @@ TODO:
 - [ ] 13. Start using migration instead of sync()
 - [ ] 14. Move logging() from index.js to middlewares/logging.js <--create new file
 - [ ] 15. implement new endpoint GET /api/shared/politicalAffiliation -> return [{ key: string, value: string}] ex. [{ key: "DEMOCRATIC_PARTY", value: "Democratic party" }, ...]
+- [ ] 16. Change number 4->6 number of digit which generated for email verification
 
 Bugs:
 
