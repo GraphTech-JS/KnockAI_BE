@@ -18,8 +18,8 @@ TODO:
 
 Bugs:
 
-- [] Fix issue when /login with wrong email
-  -> Expect:
-  status: 401 message: WRONG_CREDENTIAL
-  -> Got:
-  status: 500 message: UNHANDLED
+- [x] Fix issue when /login with wrong email
+      -> Expect:
+      status: 401 message: WRONG_CREDENTIAL
+      -> Got:
+      status: 500 message: UNHANDLED
