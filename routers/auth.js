@@ -76,7 +76,7 @@ router.post("/login", async (req, res, next) => {
     const userRecord = await User.findOne({ where: { email } });
     const hashedPassword = hash(password);
 
-    if (hashedPassword !== userRecord.password) {
+    if (!userRecord || hashedPassword !== userRecord.password) {
       throw new WrongCredentialError();
     }
 
