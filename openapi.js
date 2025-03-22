@@ -1,3 +1,5 @@
+import { politicalAffiliationEnum } from "./helpers/constants.js";
+
 const type = (type, options) => ({ type, ...options });
 
 const emailType = type("string", {
@@ -20,26 +22,28 @@ const enumType = (enumArray) =>
 
 const roleEnum = enumType(["ADMIN", "COMPANY", "AGITATOR"]);
 const userStatusEnum = enumType(["VERIFIED", "UNVERIFIED"]);
-const politicalAffiliationEnum = enumType([
-  "DEMOCRAT",
-  "REPUBLICAN",
-  "INDEPENDENT_OR_ENTERPRICE",
-]);
+const politicalAffiliationSchemaEnum = enumType(
+  Object.keys(politicalAffiliationEnum)
+);
 
 const messageSchema = {
   schema: {
     type: "object",
     properties: {
       message: type("string"),
+      statusCode: type("number"),
+      status: type("string"),
     },
   },
   example: {
-    message: "Error message",
+    message: "User 4b068064-116d-4f5c-8380-6d2bb07d5f06 not found",
+    statusCode: 404,
+    status: "NOT_FOUND",
   },
 };
 
-const errorResponsePattern = (code, description, schema) => ({
-  [code]: {
+const errorResponsePattern = (statusCode, description, schema) => ({
+  [statusCode]: {
     description,
     content: {
       "application/json": schema,
@@ -76,7 +80,7 @@ const userSchema = {
       email: emailType,
       role: roleEnum,
       status: userStatusEnum,
-      politicalAffiliation: politicalAffiliationEnum,
+      politicalAffiliation: politicalAffiliationSchemaEnum,
     },
   },
   example: {
@@ -106,6 +110,7 @@ const tokenPairSchema = {
 
 const loginPath = {
   post: {
+    tags: ["User Authentication"],
     summary: "User login",
     requestBody: {
       required: true,
@@ -135,6 +140,7 @@ const loginPath = {
 
 const registerPath = {
   post: {
+    tags: ["User Authentication"],
     summary: "Register a new user",
     requestBody: {
       required: true,
@@ -147,7 +153,7 @@ const registerPath = {
               lastName: type("string"),
               email: emailType,
               role: roleEnum,
-              politicalAffiliation: politicalAffiliationEnum,
+              politicalAffiliation: politicalAffiliationSchemaEnum,
               password: type("string"),
             },
           },
@@ -168,6 +174,7 @@ const registerPath = {
 
 const confirmRegistrationPath = {
   post: {
+    tags: ["User Authentication"],
     summary: "Confirm user registration",
     description:
       "Confirms the user's registration by verifying the code and updating the user status to 'VERIFIED'.",
@@ -208,6 +215,7 @@ const confirmRegistrationPath = {
 
 const mePath = {
   get: {
+    tags: ["User Authentication"],
     summary: "Get user data by token",
     description:
       "Retrieves the authenticated user's data based on the user ID extracted from a valid Bearer token. The endpoint queries the database for a user matching the provided user ID and returns their details in a formatted response.",
@@ -243,6 +251,13 @@ export default {
     },
     {
       url: "http://localhost:3000",
+    },
+  ],
+  tags: [
+    {
+      name: "User Authentication",
+      description:
+        "Endpoints related to user registration, login, and authentication",
     },
   ],
   components: {
