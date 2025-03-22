@@ -26,7 +26,7 @@ const politicalAffiliationSchemaEnum = enumType(
   Object.keys(politicalAffiliationEnum)
 );
 
-const messageSchema = {
+const messageSchema = (statusCode, status, message) => ({
   schema: {
     type: "object",
     properties: {
@@ -36,33 +36,37 @@ const messageSchema = {
     },
   },
   example: {
-    message: "User 4b068064-116d-4f5c-8380-6d2bb07d5f06 not found",
-    statusCode: 404,
-    status: "NOT_FOUND",
+    message,
+    statusCode,
+    status,
   },
-};
+});
 
-const errorResponsePattern = (statusCode, description, schema) => ({
+const errorResponsePattern = (statusCode, description, message) => ({
   [statusCode]: {
     description,
     content: {
-      "application/json": schema,
+      "application/json": messageSchema(statusCode, description, message),
     },
   },
 });
 
-const notFoundResponse = errorResponsePattern(404, "NOT_FOUND", messageSchema);
+const notFoundResponse = errorResponsePattern(
+  404,
+  "NOT_FOUND",
+  "User 4b068064-116d-4f5c-8380-6d2bb07d5f06 not found"
+);
 
 const unauthorizedResponse = errorResponsePattern(
   401,
-  "ACCESS_DENY",
-  messageSchema
+  "UNAUTHORIZED",
+  "Unauthorized"
 );
 
 const unexpectedErrorResponse = errorResponsePattern(
   500,
-  "UNEXPECTED",
-  messageSchema
+  "SERVER_ERROR",
+  "Internal server error"
 );
 
 const baseErrorResponses = {
