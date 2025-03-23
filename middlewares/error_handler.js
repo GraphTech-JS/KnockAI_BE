@@ -33,7 +33,7 @@ export class WrongCredentialError extends ServerError {
 }
 
 export const errorHandler = (error, req, res, next) => {
-  if (error.handled === false) {
+  if (!error.handled) {
     error = new UnhandledError();
   }
   return res.status(error.statusCode).json({
