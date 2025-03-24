@@ -242,6 +242,41 @@ const mePath = {
   },
 };
 
+const politialAffiliationShema = {
+  schema: {
+    type: "array",
+    items: {
+      type: "object",
+      properties: {
+        key: type("string"),
+        value: type("string"),
+      },
+      required: ["key", "value"],
+    },
+  },
+  example: Object.entries(politicalAffiliationEnum).map(([key, value]) => ({
+    key,
+    value,
+  })),
+};
+
+const sharedPolitialAffiliationPath = {
+  get: {
+    tags: ["Shared"],
+    summary: "Get all possilbe political affiliation options",
+    description: "Provide all political affiliation options",
+    responses: {
+      200: {
+        description: "Polotiacal affiliation options",
+        content: {
+          "application/json": politialAffiliationShema,
+        },
+      },
+      ...unexpectedErrorResponse,
+    },
+  },
+};
+
 export default {
   openapi: "3.0.0",
   info: {
@@ -263,6 +298,10 @@ export default {
       description:
         "Endpoints related to user registration, login, and authentication",
     },
+    {
+      name: "Shared",
+      description: "Endpoints related to shared types",
+    },
   ],
   components: {
     securitySchemes: {
@@ -279,5 +318,6 @@ export default {
     "/api/auth/login": loginPath,
     "/api/auth/confirmRegistration": confirmRegistrationPath,
     "/api/auth/me": mePath,
+    "/api/shared/politicalAffiliation": sharedPolitialAffiliationPath,
   },
 };
