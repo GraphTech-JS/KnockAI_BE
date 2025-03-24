@@ -14,8 +14,8 @@ TODO:
 - [ ] 12. Create other database instanse (prob. NeonDB)
 - [ ] 13. Start using migration instead of sync()
 - [ ] 14. Move logging() from index.js to middlewares/logging.js <--create new file
-- [ ] 15. implement new endpoint GET /api/shared/politicalAffiliation -> return [{ key: string, value: string}] ex. [{ key: "DEMOCRATIC_PARTY", value: "Democratic party" }, ...]
-- [ ] 16. Change number 4->6 number of digit which generated for email verification
+- [x] 15. implement new endpoint GET /api/shared/politicalAffiliation -> return [{ key: string, value: string}] ex. [{ key: "DEMOCRATIC_PARTY", value: "Democratic party" }, ...]
+- [x] 16. Change number 4->6 number of digit which generated for email verification
 
 Bugs:
 
@@ -24,3 +24,7 @@ Bugs:
       status: 401 message: WRONG_CREDENTIAL
       -> Got:
       status: 500 message: UNHANDLED
+
+- [ ] Handle duplicated records when user try to register one moore time w/ existing email
+      -> Create new Error (ex: WrongCredentialError)
+      -> Throw it in case on dublication user
