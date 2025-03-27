@@ -176,6 +176,44 @@ const registerPath = {
   },
 };
 
+const updateUserProfilePath = {
+  patch: {
+    tags: ["Users"],
+    summary: "Update user profile",
+    security: [
+      {
+        bearerAuth: [],
+      },
+    ],
+    requestBody: {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              firstName: type("string"),
+              lastName: type("string"),
+              politicalAffiliation: politicalAffiliationSchemaEnum,
+              password: type("string"),
+            },
+          },
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "User updated",
+        content: {
+          "application/json": userSchema,
+        },
+      },
+      ...baseErrorResponses,
+      ...notFoundResponse,
+    },
+  },
+};
+
 const confirmRegistrationPath = {
   post: {
     tags: ["User Authentication"],
@@ -319,5 +357,6 @@ export default {
     "/api/auth/confirmRegistration": confirmRegistrationPath,
     "/api/auth/me": mePath,
     "/api/shared/politicalAffiliation": sharedPolitialAffiliationPath,
+    "/api/users/updateProfile": updateUserProfilePath,
   },
 };

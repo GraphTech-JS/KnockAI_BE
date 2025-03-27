@@ -1,4 +1,5 @@
 import { hash } from "../helpers/auth.js";
+import { removeNullAndUndefinedFromObject } from "../helpers/common.js";
 
 export function toUserRecordInput(body, verificationCode) {
   return {
@@ -23,4 +24,18 @@ export function toUserResponse(record) {
     status: record.status,
     politicalAffiliation: record.political_affiliation,
   };
+}
+
+export function toUpdateUserProfileInput(body) {
+  const input = {
+    first_name: body.firstName,
+    lastName: body.lastName,
+    political_affiliation: body.politicalAffiliation,
+  };
+
+  if (body.password) {
+    input.password = hash(body.password);
+  }
+
+  return removeNullAndUndefinedFromObject(input);
 }
