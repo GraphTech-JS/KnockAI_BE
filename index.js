@@ -6,6 +6,8 @@ import cors from "cors";
 import { errorHandler } from "./middlewares/error_handler.js";
 import authRouter from "./routers/auth.js";
 import sharedRouter from "./routers/shared.js";
+import * as OpenApiValidator from "express-openapi-validator";
+
 const PORT = process.env.PORT || 3000;
 function loging(req, res, next) {
   console.log("Request received at:  ", req.url);
@@ -22,6 +24,14 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(apiSpec));
+
+app.use(
+  OpenApiValidator.middleware({
+    apiSpec,
+    validateRequests: true,
+    validateResponses: false,
+  })
+);
 
 app.use("/api/auth", loging, authRouter);
 

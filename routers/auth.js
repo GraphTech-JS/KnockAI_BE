@@ -12,6 +12,7 @@ import EmailService from "../services/email.js";
 import {
   NotFoundUserError,
   WrongCredentialError,
+  EmailConflictError,
 } from "../middlewares/error_handler.js";
 const router = express.Router();
 
@@ -28,7 +29,10 @@ const router = express.Router();
 router.post("/register", async (req, res, next) => {
   try {
     const { firstName, lastName, email } = req.body;
-
+    const userRecord = await User.findOne({ where: { email } });
+    if (userRecord) {
+      throw new EmailConflictError();
+    }
     const verificationCode = generateVerificationCode();
     const hashedVerificationCode = hash(verificationCode.toString());
 

@@ -31,8 +31,14 @@ export class WrongCredentialError extends ServerError {
     super("Wrong credentials", "UNAUTHORIZED", 401);
   }
 }
+export class EmailConflictError extends ServerError {
+  constructor() {
+    super("Email conflict", "CONFLICT", 409);
+  }
+}
 
 export const errorHandler = (error, req, res, next) => {
+  //<<Try to catch swagger errors here
   if (!error.handled) {
     error = new UnhandledError();
   }

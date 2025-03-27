@@ -4,10 +4,10 @@ TODO:
 - [x] 2. Follow routers structure (suggested into routers/auth.js)
 - [x] 3. Handle error in one place (use custom errors, see middlewaress/error_handler.js)
 - [x] 4. Implement api/auth/resendCode endpoint
-- [ ] 5. Use swagger as validator for inputs
-- [ ] 6. Write docs for currect endpoints
+- [x] 5. Use swagger as validator for inputs
+- [ ] 6. Move helpers, mappers, middlewares, models, routers, services -> src (should be created)
 - [ ] 7. Separate routers logic to services (create services/user.js)
-- [ ] 8. Move helpers, mappers, middlewares, models, routers, services -> src (should be created)
+- [ ] 8. Write docs for currect endpoints
 - [ ] 9. Use secret (process.env.SECRET) for token generation
 - [ ] 10. Use different algorithms for access token and refresh tokens
 - [ ] 11. Clean up code (remove unused variables/imports)
@@ -25,6 +25,6 @@ Bugs:
       -> Got:
       status: 500 message: UNHANDLED
 
-- [ ] Handle duplicated records when user try to register one moore time w/ existing email
+- [x] Handle duplicated records when user try to register one moore time w/ existing email
       -> Create new Error (ex: WrongCredentialError)
       -> Throw it in case on dublication user

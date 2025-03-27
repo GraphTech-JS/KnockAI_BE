@@ -4,14 +4,11 @@ const type = (type, options) => ({ type, ...options });
 
 const emailType = type("string", {
   format: "email",
-  pattern: "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
   description: "Valid email address format",
 });
 
 const uuidType = type("string", {
   format: "uuid",
-  pattern:
-    "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
   description: "Valid UUID format (e.g., 550e8400-e29b-41d4-a716-446655440000)",
 });
 
@@ -55,6 +52,12 @@ const notFoundResponse = errorResponsePattern(
   404,
   "NOT_FOUND",
   "User 4b068064-116d-4f5c-8380-6d2bb07d5f06 not found"
+);
+
+const conflictResponse = errorResponsePattern(
+  409,
+  "CONFLICT",
+  "Email conflict"
 );
 
 const unauthorizedResponse = errorResponsePattern(
@@ -126,12 +129,14 @@ const loginPath = {
               email: emailType,
               password: type("string"),
             },
+            required: ["email", "password"],
           },
         },
       },
     },
     responses: {
       200: {
+        description: "User successfully logged in",
         content: {
           "application/json": tokenPairSchema,
         },
@@ -172,6 +177,7 @@ const registerPath = {
         },
       },
       ...unexpectedErrorResponse,
+      ...conflictResponse,
     },
   },
 };
@@ -242,7 +248,7 @@ const mePath = {
   },
 };
 
-const politialAffiliationShema = {
+const politialAffiliationSchema = {
   schema: {
     type: "array",
     items: {
@@ -269,7 +275,7 @@ const sharedPolitialAffiliationPath = {
       200: {
         description: "Polotiacal affiliation options",
         content: {
-          "application/json": politialAffiliationShema,
+          "application/json": politialAffiliationSchema,
         },
       },
       ...unexpectedErrorResponse,
@@ -278,7 +284,7 @@ const sharedPolitialAffiliationPath = {
 };
 
 export default {
-  openapi: "3.0.0",
+  openapi: "3.0.1",
   info: {
     title: "User API",
     version: "1.0.0",
