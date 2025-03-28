@@ -29,7 +29,7 @@ export function toUserResponse(record) {
 export function toUpdateUserProfileInput(body) {
   const input = {
     first_name: body.firstName,
-    lastName: body.lastName,
+    last_name: body.lastName,
     political_affiliation: body.politicalAffiliation,
   };
 
