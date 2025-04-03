@@ -315,6 +315,64 @@ const sharedPolitialAffiliationPath = {
   },
 };
 
+const uploadFilePath = {
+  post: {
+    tags: ["Shared"],
+    summary: "[DEV] Upload a file",
+    description:
+      "Uploads a file to Google Drive. This endpoint is for development purposes only and should be replaced with S3 in production.",
+    requestBody: {
+      required: true,
+      content: {
+        "multipart/form-data": {
+          schema: {
+            type: "object",
+            properties: {
+              file: type("string", {
+                format: "binary",
+                description: "The file to be uploaded",
+              }),
+            },
+          },
+        },
+      },
+    },
+
+    responses: {
+      200: {
+        description: "File uploaded successfully",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                fileId: type("string", {
+                  description: "The unique ID of the uploaded file",
+                }),
+                message: type("string", {
+                  description:
+                    "Success message with a note about API stability",
+                }),
+                url: type("string", {
+                  format: "uri",
+                  description: "Public URL to access the uploaded file",
+                }),
+              },
+            },
+            example: {
+              fileId: "1H1j-KjG9D5N3Xb4E7Z5vQ",
+              message:
+                "File uploaded successfully || only for dev env, unstable api, use S3 instead",
+              url: "https://lh3.google.com/u/0/d/1H1j-KjG9D5N3Xb4E7Z5vQ",
+            },
+          },
+        },
+      },
+      ...baseErrorResponses,
+    },
+  },
+};
+
 export default {
   openapi: "3.0.0",
   info: {
@@ -357,6 +415,7 @@ export default {
     "/api/auth/confirmRegistration": confirmRegistrationPath,
     "/api/auth/me": mePath,
     "/api/shared/politicalAffiliation": sharedPolitialAffiliationPath,
+    "/api/shared/upload": uploadFilePath,
     "/api/users/updateProfile": updateUserProfilePath,
   },
 };
